@@ -43,7 +43,8 @@
                         id="autocomplete" 
                         class="input-error input-xxlarge" />
                         <button class="sui-btn btn-xlarge btn-danger" 
-                        type="button" @click="toSearch">搜索</button>
+                        type="button"
+                         @click="toSearch">搜索</button>
                     </form>
                 </div>
             </div>
@@ -58,6 +59,9 @@ export default {
           keyword:'',
       }
   },
+  mounted(){
+      this.$bus.$on('clearKeyword',this.clearKeyword)
+  },
   methods:{
       toSearch(){
         //   路由传参字符串拼接 +
@@ -65,12 +69,31 @@ export default {
         // 路由传参 模板字符串
        // this.$router.push(`/search/${this.keyword}?keyword1=${this.keyword.toUpperCase()}`)
         //路由传参  对象（name）
-        this.$router.push({
-            name:'search',
-            query:{keyword1:this.keyword.toUpperCase()},
-            params:{keyword:this.keyword},
+        // this.$router.push({
+        //     name:'search',
+        //     query:{keyword1:this.keyword.toUpperCase()},
+        //     params:{keyword:this.keyword},
            
-        })
+        // }).catch(()=>{})
+
+        let location ={
+            name:"search",
+            params:{keyword:this.keyword},
+        }
+
+        if(this.$route.query){
+            location.query=this.$route.query
+        }
+
+        // this.$router.push(location)
+          if(this.$route.path !=='/home'){
+         this.$router.replace(location);//从search跳转search用replace不保留历史记录
+       }else{
+         this.$router.push(location);//从home跳转search用push保留历史记录
+       }
+      },
+      clearKeyword(){
+          this.keyword=""
       }
   }
 
